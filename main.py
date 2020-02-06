@@ -1,23 +1,46 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from distance import distance
 from create_clusters import create_clusters
 
-points = 100  # Numero di punti da generare per ogni cluster (righe della matrice)
+# INIZIALIZZAZIONE (parametri)
+
+points = 10  # Numero di punti da generare per ogni cluster (righe della matrice)
 features = 2  # Numero di dimensioni per ogni punto (colonne della matrice)
 
 clusters = 5
 center_range = 5000  # Range di possibili coordinate da assegnare i centri dei cluster
 scale_range = 100  # Range della deviazione standard di ogni cluster
 
+# CREAZIONE DATASET
+
 # Crea un dataset di punti suddivisi in cluster utilizzando i parametri specificati in precedenza
 # plot=True (default: False) permette di visualizzare il grafico del dataset ottenuto
 # centroids=True (default: False) permette di ritornare anche la matrice delle coordinate dei centri effettivi dei cluster, così come sono stati definiti nella loro creazione (NON corrispondono a punti effettivamente presenti nel dataset); for debug purposes only
 dataset, centri = create_clusters(points=points, features=features, clusters=clusters, center_range=center_range, scale_range=scale_range, centroids=True)
 
-# TODO Va scelto in modo random
-# TODO Attenzione: i centroidi attualmente NON coincidono con alcun punto nel dataset (a meno di qualche punto casualmente generato proprio lì)
+
+# SCELTA CENTROIDI
+
+# TODO Vanno scelti DAL DATASET (devono appartenere all'insieme ammissibile)
+# TODO Attenzione: i centroidi attualmente sono generati casualmente e NON coincidono con alcun punto nel dataset (a meno di qualche punto casualmente generato proprio lì)
+
+c = np.empty(shape=(1, features))
+centroids = np.empty(shape=(1, features))  # Array dei centri dei cluster; for debug purposes only
+for i in range(0, clusters):
+    for j in range(0, features):
+        c[0, j] = int(np.random.randint(center_range, size=1))
+    centroids = np.append(centroids, c, axis=0)
+centroids = np.delete(centroids, (0), axis=0)
+centroids = centroids.round()
+
+print(centroids)
+
+
+
+# CALCOLO DISTANZE PUNTI-CENTROIDI
 
 # Calcolo distanze tra punti e centroidi
 dist = np.zeros((1, 3))  # Vettore delle distanze tra i punti del dataset ed i centroidi; le colonne 1 e 2 indicano il numero di riga nel dataset dei punti tra i quali è stata calcolata la distanza
@@ -25,14 +48,15 @@ dist = np.zeros((1, 3))  # Vettore delle distanze tra i punti del dataset ed i c
 for i in range(0, len(dataset)):  # Ciclo sulle righe del dataset
     for j in range(0, clusters):  # Ciclo sui centroidi (uguali in numero ai cluster)  # TODO Tecnicamente non sappiamo quanti cluster ci sono, quindi andrà aggiustato anche questo numero
         x = np.array(dataset.loc[i, :])  # Riga i-esima del dataset (ovvero punto i-esimo)
-        y = centri[j, :]  # Centroide i-esimo
+        y = centroids[j, :]  # Centroide i-esimo
         dist = np.append(dist, np.array([[i, j, distance(x, y)]]), axis=0)
 dist = np.delete(dist, 0, axis=0)  # Cancella la primissima riga della matrice delle distanze, creata inizialmente vuota per avere un array di base cui aggiungere righe
-np.set_printoptions(suppress=True)
+np.set_printoptions(suppress=True)  # Rimuove la notazione scientifica (per print più puliti)
 
 
-labels = np.zeros([len(dataset), 2])  # Vettore contenente
+# CLASSIFICAZIONE (individuazione dei cluster)
 
+labels = np.zeros([len(dataset), 2])  # Vettore contenente il cluster di appartenenza di ogni punto
 index = clusters - 1
 for k in range(0, len(dist)):
     # Estrae, ad ogni ciclo, il sottoinsieme delle distanze di un punto da tutti i centroidi, per ogni punto, e trova quella minima (insieme al numero del cluster a cui si riferisce)
@@ -46,5 +70,21 @@ for k in range(0, len(dist)):
 
 dataset[2] = labels[:,1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
 
-p = dataset.plot.scatter(x=0,y=1,c=dataset[2],cmap="tab20b")
+# PLOTTING
+
+x = range(100)
+y = range(100,200)
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+
+ax1.scatter(x=dataset[0], y=dataset[1], c=dataset[2],cmap="tab20b", label='Dataset points')
+ax1.scatter(x=0,y=1,c='black', label='Centroids')
+plt.legend(loc='upper left');
+
+
+
+#dataset.plot.scatter(x=0,y=1,c=dataset[2],cmap="tab20b")
+#pd.DataFrame(centroids).plot.scatter(x=0,y=1,c='black')
 plt.show()
+
+# TODO Unificare la lingua in commenti e nomi variabili/funzioni (inglese o italiano?)
