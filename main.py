@@ -12,7 +12,7 @@ features = 2  # Numero di dimensioni per ogni punto (colonne della matrice)
 
 clusters = 5
 center_range = 5000  # Range di possibili coordinate da assegnare i centri dei cluster
-scale_range = 100  # Range della deviazione standard di ogni cluster
+scale_range = 300  # Range della deviazione standard di ogni cluster
 
 # CREAZIONE DATASET
 
@@ -77,9 +77,9 @@ y = range(100,200)
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 
-ax1.scatter(x=dataset[0], y=dataset[1], c=dataset[2],cmap="tab20b", label='Dataset points')
-ax1.scatter(x=0,y=1,c='black', label='Centroids')
-plt.legend(loc='upper left');
+ax1.scatter(x=dataset[0], y=dataset[1], c=dataset[2], cmap="tab20b", label='Dataset points')
+ax1.scatter(x=centroids[:, 0], y=centroids[:, 1], c='red', marker='^', label='Centroids')
+#plt.legend(loc='upper left')
 
 
 
@@ -88,3 +88,5 @@ plt.legend(loc='upper left');
 plt.show()
 
 # TODO Unificare la lingua in commenti e nomi variabili/funzioni (inglese o italiano?)
+# TODO Implementare scelta del numero di cluster (che per il momento è nota)
+# TODO Dare ai centroidi lo stesso colore dei cluster cui si riferiscono (al momento i centroidi sono tutti rossi)
