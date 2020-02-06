@@ -51,7 +51,7 @@ for k in range(0, len(dist)):
         labels[k, 0] = k  # Numero del punto
         labels[k, 1] = point_dist[np.argmin(point_dist[:,1]),0]  # Numero del cluster a cui appartiene il punto
 
-dataset[2] = labels[:,1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
+dataset[2] = labels[:, 1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
 
 
 # PLOTTING
@@ -66,6 +66,7 @@ plt.show()
 
 # TODOs
 
+# TODO Capire in che modo implementare multistart (un centroide per volta oppure più centroidi insieme?)
 # TODO Unificare la lingua in commenti e nomi variabili/funzioni (inglese o italiano?)
 # TODO Implementare scelta del numero di cluster (che per il momento è nota)
 # TODO Dare ai centroidi lo stesso colore dei cluster cui si riferiscono (al momento i centroidi sono tutti rossi)
