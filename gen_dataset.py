@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def create_clusters(points=1000, features=2,clusters=8,center_range=5000, scale_range=100, plot=False, centroids=False):
+def gen_dataset(points=1000, features=2, clusters=8, center_range=5000, scale_range=100, plot=False, centroids=False):
 
     samples = []  # Array di cluster (è il samples generato)
     dataset = pd.DataFrame()
