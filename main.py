@@ -6,47 +6,21 @@ from gen_dataset import gen_dataset
 from gen_centroids import gen_centroids
 
 # INIZIALIZZAZIONE (parametri)
-
 points = 10  # Numero di punti da generare per ogni cluster (righe della matrice)
 features = 2  # Numero di dimensioni per ogni punto (colonne della matrice)
-
 clusters = 5
 center_range = 5000  # Range di possibili coordinate da assegnare i centri dei cluster
 scale_range = 300  # Range della deviazione standard di ogni cluster
 
 # CREAZIONE DATASET
-
 # Crea un dataset di punti suddivisi in cluster utilizzando i parametri specificati in precedenza
 # plot=True (default: False) permette di visualizzare il grafico del dataset ottenuto
-# centroids=True (default: False) permette di ritornare anche la matrice delle coordinate dei centri effettivi dei cluster, così come sono stati definiti nella loro creazione (NON corrispondono a punti effettivamente presenti nel dataset); for debug purposes only
+# centroids=True (default: False) permette di ritornare anche la matrice delle coordinate dei centri effettivi dei cluster, così come sono stati definiti nella loro creazione (NON corrispondono a punti effettivamente presenti nel dataset) [for debug purposes only]
 dataset, centri = gen_dataset(points=points, features=features, clusters=clusters, center_range=center_range, scale_range=scale_range, centroids=True)
 
 
 # SCELTA CENTROIDI
-
-# TODO Vanno scelti DAL DATASET (devono appartenere all'insieme ammissibile)
-# TODO Attenzione: i centroidi attualmente sono generati casualmente e NON coincidono con alcun punto nel dataset (a meno di qualche punto casualmente generato proprio lì)
-
-random_centroids = gen_centroids(clusters, features, center_range)
-
-c = np.empty(shape=(1, features))
-centroids = np.empty(shape=(1, features))  # Array dei centri dei cluster; for debug purposes only
-
-for i in range(0, clusters):
-    #print(np.random.randint(points*clusters-1, size=1))
-    c = dataset.loc[np.random.randint(points*clusters-1, size=1)]  # Restituisce la posizione di un punto scelto a caso dal dataset
-    c = c.values
-    #print(c)
-    centroids = np.append(centroids, c, axis=0)  # Aggiunta del centroide alla matrice che li contiene tutti
-centroids = np.delete(centroids, 0, axis=0)
-centroids = centroids.round()
-
-print(dataset)
-print()
-print(centroids)
-print()
-print(random_centroids)
-
+centroids = gen_centroids(dataset, points, clusters, features)
 
 
 # CALCOLO DISTANZE PUNTI-CENTROIDI
@@ -79,15 +53,16 @@ for k in range(0, len(dist)):
 
 dataset[2] = labels[:,1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
 
-# PLOTTING
 
+# PLOTTING
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.scatter(x=dataset[0], y=dataset[1], c=dataset[2], cmap="tab20b", label='Dataset points')
-ax.scatter(x=centroids[:, 0], y=centroids[:, 1], c='red', marker='^', label='Centroids')
+ax.scatter(x=dataset[0], y=dataset[1], c=dataset[2], cmap="tab20b", label='Dataset points', s=15)
+ax.scatter(x=centroids[:, 0], y=centroids[:, 1], c='red', marker='x', s=50, label='Centroids')
 #plt.legend(loc='upper left')
 
 plt.show()
+
 
 # TODOs
 

@@ -1,12 +1,12 @@
 import numpy as np
 
-def gen_centroids(clusters, features, center_range):
+def gen_centroids(dataset, points, clusters, features):
 
-    c = np.empty(shape=(1, features))
-    centroids = np.empty(shape=(1, features))  # Array dei centri dei cluster; for debug purposes only
+    centroids = np.empty(shape=(1, features))  # Array dei centroidi
+
     for i in range(0, clusters):
-        for j in range(0, features):  # Generazione del singolo centroide
-            c[0, j] = int(np.random.randint(center_range, size=1))
+        c = dataset.loc[np.random.randint(points*clusters-1, size=1)]  # Restituisce la posizione di un punto scelto a caso dal dataset
+        c = c.values
         centroids = np.append(centroids, c, axis=0)  # Aggiunta del centroide alla matrice che li contiene tutti
     centroids = np.delete(centroids, 0, axis=0)
     centroids = centroids.round()
