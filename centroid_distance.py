@@ -5,14 +5,15 @@ from distance import distance
 
 def centroid_distance(dataset, centroids, k):
 
-    dist = np.zeros((1, 3))  # Vettore delle distanze tra i punti del dataset ed i centroidi; le colonne 1 e 2 indicano il numero di riga nel dataset dei punti tra i quali è stata calcolata la distanza
+    dist = np.zeros((1, 3))  # Array of distances of each point from each centroid; columns 0 and 1 refer to the index in the dataset of the points that have been used for the distance stored in column 2
 
-    for i in range(0, len(dataset)):  # Ciclo sulle righe del dataset
-        for j in range(0, k):  # Ciclo sui centroidi (uguali in numero ai cluster)
-            x = np.array(dataset.loc[i, :])  # Riga i-esima del dataset (ovvero punto i-esimo)
-            y = centroids[j, :]  # Centroide i-esimo
+    for i in range(0, len(dataset)):  # Loop on the dataset rows (or points)
+        for j in range(0, k):  # Loop on centroids (which are equal in number to k)
+            x = np.array(dataset.loc[i, :])  # i-th row of the dataset (also i-th point)
+            y = centroids[j, :]  # i-th centroid
             dist = np.append(dist, np.array([[i, j, distance(x, y)]]), axis=0)
-    dist = np.delete(dist, 0, axis=0)  # Cancella la primissima riga della matrice delle distanze, creata inizialmente vuota per avere un array di base cui aggiungere righe
-    np.set_printoptions(suppress=True)  # Rimuove la notazione scientifica (per print più puliti)
+
+    dist = np.delete(dist, 0, axis=0)  # Removes the first row of tha matrix (all zeros)
+    np.set_printoptions(suppress=True)  # Removes scientific notation (better prints)
 
     return dist

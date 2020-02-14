@@ -3,7 +3,7 @@ from math import sqrt
 
 def distance(x, y):
 
-    if len(x) == len(y):  # Controlla che i punti abbiano la stessa dimensione, altrimenti la distanza non può essere calcolata
+    if len(x) == len(y):  # Checks that vectors have the same number of featuyres (or dimension)
         s = 0
         for i in range(0, len(x)):
             s = s + (x[i] - y[i])**2

@@ -63,8 +63,3 @@ if features == 2:
     ax.scatter(x=dataset[0], y=dataset[1], c=dataset[features], cmap="tab20b", label='Dataset points', s=15)
     ax.scatter(x=centroids[:, 0], y=centroids[:, 1], c='red', marker='x', s=50, label='Centroids')
     plt.show()
-
-
-# TODOs
-
-# TODO Unificare la lingua in commenti e nomi variabili/funzioni (inglese o italiano?)
