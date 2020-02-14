@@ -9,7 +9,7 @@ from label import label
 
 # Dataset parameters
 
-k = 4  # Number of clusters
+k = 2  # Number of clusters
 points = 100  # Number of points per cluster
 features = 2  # Number of features of each point
 
