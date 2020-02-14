@@ -2,7 +2,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def gen_dataset(points=1000, features=2, k=8, center_range=5000, scale_range=100, plot=False, centroids=False):
+# plot=True (default: False) permette di visualizzare il grafico del dataset ottenuto
+# centroids=True (default: False) permette di ritornare anche la matrice delle coordinate dei centri effettivi dei cluster, così come sono stati definiti nella loro creazione (NON corrispondono a punti effettivamente presenti nel dataset) [for debug purposes only]
+
+
+def gen_dataset(points=1000, features=2, k=8, center_range=5000, scale_low=0, scale_high=300, plot=False, centers=False):
 
     samples = []  # Array di cluster (è il samples generato)
     dataset = pd.DataFrame()
@@ -15,7 +19,7 @@ def gen_dataset(points=1000, features=2, k=8, center_range=5000, scale_range=100
             center[0, j] = int(np.random.randint(center_range, size=1))
         c = np.append(c, center, axis=0)
 
-        scale = int(np.random.randint(scale_range, size=1))
+        scale = int(np.random.randint(low=scale_low, high=scale_high, size=1))
 
         samples.append(np.random.normal(loc=center, scale=scale, size=(points, features)))
 
@@ -34,7 +38,7 @@ def gen_dataset(points=1000, features=2, k=8, center_range=5000, scale_range=100
         dataset.plot.scatter(x=0,y=1)
         plt.show()
 
-    if centroids:
+    if centers:
         return dataset, c
     else:
         return dataset

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def gen_rand_centroids(k, features, center_range):
 
     c = np.empty(shape=(1, features))
