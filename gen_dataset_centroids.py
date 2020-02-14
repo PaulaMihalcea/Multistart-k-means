@@ -1,6 +1,6 @@
 import numpy as np
 
-def gen_centroids(dataset, points, k, features):
+def gen_dataset_centroids(dataset, points, k, features):
 
     centroids = np.empty(shape=(1, features))  # Array dei centroidi
 
@@ -12,5 +12,3 @@ def gen_centroids(dataset, points, k, features):
     centroids = centroids.round()
 
     return centroids
-
-# TODO Riscrivere per prendere un punto random inziale e poi k-1 punti più lontani da lui

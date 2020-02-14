@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 
 from distance import distance
 from gen_dataset import gen_dataset
-from gen_centroids import gen_centroids
+from gen_dataset_centroids import gen_dataset_centroids
 
 # INIZIALIZZAZIONE (parametri)
 points = 10  # Numero di punti da generare per ogni cluster (righe della matrice)
 features = 2  # Numero di dimensioni per ogni punto (colonne della matrice)
-clusters = 5
+k = 5
 center_range = 5000  # Range di possibili coordinate da assegnare i centri dei cluster
 scale_range = 300  # Range della deviazione standard di ogni cluster
 
@@ -16,11 +16,11 @@ scale_range = 300  # Range della deviazione standard di ogni cluster
 # Crea un dataset di punti suddivisi in cluster utilizzando i parametri specificati in precedenza
 # plot=True (default: False) permette di visualizzare il grafico del dataset ottenuto
 # centroids=True (default: False) permette di ritornare anche la matrice delle coordinate dei centri effettivi dei cluster, così come sono stati definiti nella loro creazione (NON corrispondono a punti effettivamente presenti nel dataset) [for debug purposes only]
-dataset, centri = gen_dataset(points=points, features=features, clusters=clusters, center_range=center_range, scale_range=scale_range, centroids=True)
+dataset, centri = gen_dataset(points=points, features=features, k=k, center_range=center_range, scale_range=scale_range, centroids=True)
 
 
 # SCELTA CENTROIDI
-centroids = gen_centroids(dataset, points, clusters, features)
+centroids = gen_dataset_centroids(dataset, points, k, features)
 
 
 # CALCOLO DISTANZE PUNTI-CENTROIDI
@@ -29,7 +29,7 @@ centroids = gen_centroids(dataset, points, clusters, features)
 dist = np.zeros((1, 3))  # Vettore delle distanze tra i punti del dataset ed i centroidi; le colonne 1 e 2 indicano il numero di riga nel dataset dei punti tra i quali è stata calcolata la distanza
 
 for i in range(0, len(dataset)):  # Ciclo sulle righe del dataset
-    for j in range(0, clusters):  # Ciclo sui centroidi (uguali in numero ai cluster)  # TODO Tecnicamente non sappiamo quanti cluster ci sono, quindi andrà aggiustato anche questo numero
+    for j in range(0, k):  # Ciclo sui centroidi (uguali in numero ai cluster)  # TODO Tecnicamente non sappiamo quanti cluster ci sono, quindi andrà aggiustato anche questo numero
         x = np.array(dataset.loc[i, :])  # Riga i-esima del dataset (ovvero punto i-esimo)
         y = centroids[j, :]  # Centroide i-esimo
         dist = np.append(dist, np.array([[i, j, distance(x, y)]]), axis=0)
@@ -37,19 +37,19 @@ dist = np.delete(dist, 0, axis=0)  # Cancella la primissima riga della matrice d
 np.set_printoptions(suppress=True)  # Rimuove la notazione scientifica (per print più puliti)
 
 
-# CLASSIFICAZIONE (individuazione dei cluster)
+# CLASSIFICAZIONE INIZIALE (individuazione dei cluster)
 
 labels = np.zeros([len(dataset), 2])  # Vettore contenente il cluster di appartenenza di ogni punto
-index = clusters - 1
-for k in range(0, len(dist)):
+index = k - 1
+for i in range(0, len(dist)):
     # Estrae, ad ogni ciclo, il sottoinsieme delle distanze di un punto da tutti i centroidi, per ogni punto, e trova quella minima (insieme al numero del cluster a cui si riferisce)
-    if (index + (k * clusters)-(index - 1)) < len(dist):
-        point_dist = np.zeros([clusters, 2])
-        for j in range(0, clusters):
+    if (index + (i * k) - (index - 1)) < len(dist):
+        point_dist = np.zeros([k, 2])
+        for j in range(0, k):
             point_dist[j,0] = index-j
-            point_dist[j,1] = dist[index + (k * clusters) - j, 2]
-        labels[k, 0] = k  # Numero del punto
-        labels[k, 1] = point_dist[np.argmin(point_dist[:,1]),0]  # Numero del cluster a cui appartiene il punto
+            point_dist[j,1] = dist[index + (i * k) - j, 2]
+        labels[i, 0] = i  # Numero del punto
+        labels[i, 1] = point_dist[np.argmin(point_dist[:, 1]), 0]  # Numero del cluster a cui appartiene il punto
 
 dataset[2] = labels[:, 1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
 
@@ -66,7 +66,5 @@ plt.show()
 
 # TODOs
 
-# TODO Capire in che modo implementare multistart (un centroide per volta oppure più centroidi insieme?)
 # TODO Unificare la lingua in commenti e nomi variabili/funzioni (inglese o italiano?)
-# TODO Implementare scelta del numero di cluster (che per il momento è nota)
 # TODO Dare ai centroidi lo stesso colore dei cluster cui si riferiscono (al momento i centroidi sono tutti rossi)
