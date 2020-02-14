@@ -2,15 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from gen_dataset import gen_dataset
-from gen_dataset_centroids import gen_dataset_centroids
+from gen_centroids import gen_centroids
 from centroid_distance import centroid_distance
 
 # INIZIALIZZAZIONE (parametri)
 points = 10  # Numero di punti da generare per ogni cluster (righe della matrice)
-features = 5  # Numero di dimensioni per ogni punto (colonne della matrice)
-k = 3
+features = 2  # Numero di dimensioni per ogni punto (colonne della matrice)
+k = 5
 center_range = 5000  # Range di possibili coordinate da assegnare i centri dei cluster
-scale_range = 300  # Range della deviazione standard di ogni cluster
+scale_range = 800  # Range della deviazione standard di ogni cluster
 
 # CREAZIONE DATASET
 # Crea un dataset di punti suddivisi in cluster utilizzando i parametri specificati in precedenza
@@ -20,7 +20,7 @@ dataset, centri = gen_dataset(points=points, features=features, k=k, center_rang
 
 
 # SCELTA CENTROIDI
-centroids = gen_dataset_centroids(dataset, points, k, features)
+centroids = gen_centroids(dataset, points, k, features)
 
 # CALCOLO DISTANZE PUNTI-CENTROIDI
 dist = centroid_distance(dataset, centroids, k)  # Calcolo distanze tra punti e centroidi
@@ -40,7 +40,7 @@ for i in range(0, len(dist)):
         labels[i, 0] = i  # Numero del punto
         labels[i, 1] = point_dist[np.argmin(point_dist[:, 1]), 0]  # Numero del cluster a cui appartiene il punto
 
-dataset[features-1] = labels[:, 1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
+dataset[features] = labels[:, 1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
 
 
 ###########################
@@ -48,20 +48,55 @@ dataset[features-1] = labels[:, 1]  # Adesso il dataset contiene una terza colon
 # LOOP PRINCIPALE
 x = 0  # TODO La regola di arresto va riscritta ('finché i centroidi non vengono più riassegnati')
 punti_nel_cluster = np.zeros(k)  # Numero di punti presenti in ogni cluster
-somma_features = np.zeros(k)  # Somma parziale delle features per ogni cluster
+somma_features = np.zeros((k, features))  # Somma parziale delle features per ogni cluster
 
-print(dataset)
-#print(dataset.loc[0,2])
+#print(dataset)
+print(centroids)
 
-while x < 10:
+while True:
+
+    centroids_prec = centroids
+
     for i in range(0, len(dataset)):  # Calcola il centroide per ogni cluster
-        punti_nel_cluster[int(dataset.loc[i, 4])] += 1
+        punti_nel_cluster[int(dataset.loc[i, features])] += 1
         for j in range(0, features):
-            #somma_features[int(dataset.loc[i, j])] += dataset.loc[i, 2]
-            pass
+            somma_features[int(dataset.loc[i, features]), j] += dataset.loc[i, j]
 
-    x += 1
-    pass
+    #print(somma_features)
+
+    for i in range(0, k):
+        for j in range(0, features):
+            centroids[i, j] = somma_features[i, j]/punti_nel_cluster[i]
+
+
+    ###############
+
+    # CALCOLO DISTANZE PUNTI-CENTROIDI
+    dist = centroid_distance(dataset.drop(columns=[features]), centroids, k)  # Calcolo distanze tra punti e centroidi
+
+
+    # CLASSIFICAZIONE INIZIALE (individuazione dei cluster)
+
+    labels = np.zeros([len(dataset), 2])  # Vettore contenente il cluster di appartenenza di ogni punto
+    index = k - 1
+    for i in range(0, len(dist)):
+        # Estrae, ad ogni ciclo, il sottoinsieme delle distanze di un punto da tutti i centroidi, per ogni punto, e trova quella minima (insieme al numero del cluster a cui si riferisce)
+        if (index + (i * k) - (index - 1)) < len(dist):
+            point_dist = np.zeros([k, 2])
+            for j in range(0, k):
+                point_dist[j,0] = index-j
+                point_dist[j,1] = dist[index + (i * k) - j, 2]
+            labels[i, 0] = i  # Numero del punto
+            labels[i, 1] = point_dist[np.argmin(point_dist[:, 1]), 0]  # Numero del cluster a cui appartiene il punto
+
+    dataset[features] = labels[:, 1]  # Adesso il dataset contiene una terza colonna indicante il cluster a cui appartiene ogni punto
+
+    ###############
+
+    print(centroids)
+
+    if (centroids == centroids_prec).all():
+        break
 
 
 ###########################
@@ -69,8 +104,9 @@ while x < 10:
 # PLOTTING
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.scatter(x=dataset[0], y=dataset[1], c=dataset[features-1], cmap="tab20b", label='Dataset points', s=15)
+ax.scatter(x=dataset[0], y=dataset[1], c=dataset[features], cmap="tab20b", label='Dataset points', s=15)
 ax.scatter(x=centroids[:, 0], y=centroids[:, 1], c='red', marker='x', s=50, label='Centroids')
+#ax.scatter(x=centri[:, 0], y=centri[:, 1], c='black', marker='o', s=20, label='Original centroids')
 #plt.legend(loc='upper left')
 
 plt.show()  # TODO
