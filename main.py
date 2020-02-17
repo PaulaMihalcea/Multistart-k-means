@@ -10,7 +10,7 @@ from label import label
 # Dataset parameters
 
 k = 2  # Number of clusters
-points = 100  # Number of points per cluster
+points = 1000  # Number of points per cluster
 features = 2  # Number of features of each point
 
 # Normal distribution parameters
@@ -25,7 +25,7 @@ dataset = gen_dataset(points=points, features=features, k=k, center_range=center
 
 # K-means initialization
 
-centroids = gen_rand_centroids(k=k, features=features, center_range=center_range)  # Generates k random centroids
+centroids = gen_rand_centroids(k=k, features=features, center_range=center_range, scale=scale_high)  # Generates k random centroids
 
 dataset = label(dataset, centroids, k, features)
 

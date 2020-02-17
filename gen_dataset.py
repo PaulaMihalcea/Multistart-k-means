@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def gen_dataset(points=1000, features=2, k=8, center_range=5000, scale_low=500, scale_high=1000, plot=False):
+def gen_dataset(points=1000, features=2, k=2, center_range=5000, scale_low=500, scale_high=1000, plot=False):
 
     samples = []  # Array of clusters (with their points)
     dataset = pd.DataFrame()  # Pandas dataframe; will be the final dataset
