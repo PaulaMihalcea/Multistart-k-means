@@ -31,9 +31,9 @@ def k_means(dataset, k, features, center_range, scale):
             for j in range(0, features):
                 centroids[i, j] = features_sum[i, j] / points_in_cluster[i]
 
-        dataset = label(dataset.drop(columns=[features]), centroids, k, features)  # Re-assigns the points in function of the new centroids
+        labeled_dataset = label(dataset.drop(columns=[features]), centroids, k, features)  # Re-assigns the points in function of the new centroids
 
         if (centroids == prev_centroids).all():  # Breaks the loop if centroids are not moving anymore
             break
 
-    return dataset, centroids
+    return labeled_dataset, centroids
