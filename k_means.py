@@ -28,7 +28,10 @@ def k_means(dataset, k, features, center_range, scale):
 
         for i in range(0, k):  # For each cluster, calculates the new centroid
             for j in range(0, features):
-                centroids[i, j] = features_sum[i, j] / points_in_cluster[i]
+                if points_in_cluster[i] == 0:  # Avoids runtime warnings because of divisions by zero
+                    pass
+                else:
+                    centroids[i, j] = features_sum[i, j] / points_in_cluster[i]
 
         labeled_dataset = label(labeled_dataset.drop(columns=[features]), centroids, k, features)  # Re-assigns the points in function of the new centroids
 
