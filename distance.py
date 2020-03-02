@@ -1,16 +1,16 @@
 from math import sqrt
 
 
-def distance(x, y, sq=True):
+def distance(x, y, sq=False):
 
     if len(x) == len(y):  # Checks that vectors have the same number of featuyres (or dimension)
         s = 0
         for i in range(0, len(x)):
             s = s + (x[i] - y[i])**2
-        if sq:  # sq = True (default: True) returns the Euclidean distance, otherwise returns the squared distance
-            dist = sqrt(s)
-        else:
+        if sq:  # sq = True (default: False) returns the squared distance, otherwise returns the Euclidean distance
             dist = s
+        else:
+            dist = sqrt(s)
 
         return dist
 

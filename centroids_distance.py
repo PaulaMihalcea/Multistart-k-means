@@ -3,7 +3,7 @@ import numpy as np
 from distance import distance
 
 
-def centroid_distance(dataset, centroids, k):
+def centroids_distance(dataset, centroids, k):
 
     dist = np.zeros((1, 3))  # Array of distances of each point from each centroid; columns 0 and 1 refer to the index in the dataset of the points that have been used for the distance stored in column 2
 
@@ -13,7 +13,7 @@ def centroid_distance(dataset, centroids, k):
             y = centroids[j, :]  # i-th centroid
             dist = np.append(dist, np.array([[i, j, distance(x, y)]]), axis=0)
 
-    dist = np.delete(dist, 0, axis=0)  # Removes the first row of tha matrix (all zeros)
+    dist = np.delete(dist, 0, axis=0)  # Removes the first row of the matrix (all zeros)
     np.set_printoptions(suppress=True)  # Removes scientific notation (better prints)
 
     return dist
